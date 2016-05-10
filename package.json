@@ -1,6 +1,6 @@
 {
   "name": "i18now",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Internationalization library",
   "main": "src/i18now.js",
   "scripts": {
@@ -21,7 +21,7 @@
     "url": "https://github.com/rumkin/i18now/issues"
   },
   "homepage": "https://github.com/rumkin/i18now#readme",
-  "dependencies": {
+  "devDependencies": {
     "istanbul": "^0.4.3",
     "mocha": "^2.4.5"
   },
