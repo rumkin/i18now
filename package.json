@@ -24,5 +24,8 @@
   "dependencies": {
     "istanbul": "^0.4.3",
     "mocha": "^2.4.5"
+  },
+  "engines": {
+    "node": ">=6.0"
   }
 }
