@@ -1,0 +1,113 @@
+module.exports = i18now;
+
+function i18now({dict, cache = true, parser}) {
+    var _cache = {};
+
+    function translator(name) {
+        if (cache && name in _cache) {
+            return _cache[name];
+        }
+
+        var t = function(params) {
+            return parser.parse(dict[name]).map(tok => {
+                if (tok.type === 'string') {
+                    return tok.value;
+                } else if (tok.type === 'var') {
+                    return params[tok.value] || '';
+                } else if (tok.type === 'sub') {
+                    return translator(tok.value)(params);
+                }
+            }).join('');
+        };
+
+        cache && (_cache[name] = t);
+
+        return t;
+    }
+
+    if (! parser) {
+        parser = new Parser({cache});
+    }
+
+    return new Proxy(dict, {
+        has(target, prop) {
+            return prop in dict;
+        },
+        get(target, prop) {
+            if (!(prop in target)) {
+                return function(){ return ''; };
+            }
+
+            return translator(prop);
+        }
+    });
+}
+
+
+function Parser({cache = true}) {
+    this._cache = {};
+    this.cache = cache;
+}
+
+Parser.prototype.re = /\{\{\s*([^}}]+?)\s*\}\}/;
+Parser.prototype.sre = /\{\{#\s*([^}}]+?)\s*\}\}/;
+
+Parser.prototype.parse = function (string){
+    if (this.cache && string in this._cache) {
+        return this._cache[string];
+    }
+
+    var result = [];
+    var i = 0;
+    var re = this.re;
+    var sre = this.sre;
+    var initial = string;
+    var match, type;
+
+    while(string.length) {
+        if (match = string.match(sre)) {
+            type = 'sub';
+        } else if (match = string.match(re)) {
+            type = 'var';
+        } else {
+            break;
+        }
+
+        if (match.index > 0) {
+            result.push({
+                type: 'string',
+                value: string.slice(0, match.index),
+                start: i,
+                end: i + match.index,
+            });
+
+            i += match.index;
+        }
+
+        result.push({
+            type,
+            value: match[1],
+            start: i,
+            end: i + match[0].length,
+        });
+
+        i += match.length;
+        string = string.slice(match.index + match[0].length);
+    }
+
+
+    if (string.length) {
+        result.push({
+            type: 'string',
+            value: string,
+            start: i,
+            end: i + string.length,
+        });
+    }
+
+    if (this.cache) {
+        this._cache[initial] = result;
+    }
+
+    return result;
+};

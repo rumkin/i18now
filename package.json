@@ -1,0 +1,28 @@
+{
+  "name": "i18now",
+  "version": "0.1.0",
+  "description": "Internationalization library",
+  "main": "src/i18now.js",
+  "scripts": {
+    "cov": "istanbul cover node_modules/mocha/bin/_mocha -- -u exports -R spec test/**.spec.js",
+    "test": "mocha test/**.spec.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rumkin/i18now.git"
+  },
+  "keywords": [
+    "i18n",
+    "internationalization"
+  ],
+  "author": "rumkin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rumkin/i18now/issues"
+  },
+  "homepage": "https://github.com/rumkin/i18now#readme",
+  "dependencies": {
+    "istanbul": "^0.4.3",
+    "mocha": "^2.4.5"
+  }
+}
