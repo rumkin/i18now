@@ -16,6 +16,8 @@ function i18now({dict, cache = true, parser}) {
                     return params[tok.value] || '';
                 } else if (tok.type === 'sub') {
                     return translator(tok.value)(params);
+                } else if (tok.type === 'varsub') {
+                    return translator(params[tok.value])(params);
                 }
             }).join('');
         };
@@ -49,8 +51,9 @@ function Parser({cache = true}) {
     this.cache = cache;
 }
 
-Parser.prototype.re = /\{\{\s*([^}}]+?)\s*\}\}/;
+Parser.prototype.vre = /\{\{\s*([^}}]+?)\s*\}\}/;
 Parser.prototype.sre = /\{\{#\s*([^}}]+?)\s*\}\}/;
+Parser.prototype.vsre = /\{\{##\s*([^}}]+?)\s*\}\}/;
 
 Parser.prototype.parse = function (string){
     if (this.cache && string in this._cache) {
@@ -59,15 +62,18 @@ Parser.prototype.parse = function (string){
 
     var result = [];
     var i = 0;
-    var re = this.re;
+    var vre = this.vre;
     var sre = this.sre;
+    var vsre = this.vsre;
     var initial = string;
     var match, type;
 
     while(string.length) {
-        if (match = string.match(sre)) {
+        if (match = string.match(vsre)) {
+            type = 'varsub';
+        } else if (match = string.match(sre)) {
             type = 'sub';
-        } else if (match = string.match(re)) {
+        } else if (match = string.match(vre)) {
             type = 'var';
         } else {
             break;

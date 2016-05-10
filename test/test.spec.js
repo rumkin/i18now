@@ -57,4 +57,18 @@ describe('i18now', () => {
         assert.equal(t.hello(), 'Hello', 'Cache works fine');
         assert.equal(t.hello(), 'Hello', 'Cache works fine');
     });
+
+    it('Should solve variable substitutions', () => {
+        var t = i18now({
+            dict: {
+                gender: '{{## gender }}',
+                male: 'Male',
+                female: 'Female'
+            },
+            cache: true
+        });
+
+        assert.equal(t.gender({gender: 'male'}), 'Male', 'Gender is male');
+        assert.equal(t.gender({gender: 'female'}), 'Female', 'Gender is female');
+    });
 });
