@@ -34,3 +34,6 @@ t.greeting({name: 'User'}); // => "Hello User"
 t.gender({gender: 'm'}); // => "male"
 t.gender({gender: 'f'}); // => "female"
 ```
+
+Multiple dictionaries usage see in [repository](https://github.com/rumkin/i18now)
+examples directory.
