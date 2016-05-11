@@ -1,5 +1,17 @@
 module.exports = i18now;
 
+/**
+ * @type  i18nowOptions
+ * @prop {Object} dict Object with messages as properties.
+ * @prop {Bool} cache Use parsing cache.
+ * @prop {Object} parser Basic parser interface instance.
+ */
+
+/**
+ * Create new translator.
+ * @param  {18nowOptions} Translator options.
+ * @return {Proxy} Proxy where each property is a translator function.
+ */
 function i18now({dict, cache = true, parser}) {
     var _cache = {};
 
@@ -45,16 +57,27 @@ function i18now({dict, cache = true, parser}) {
     });
 }
 
-
+/**
+ * Basic parser.
+ *
+ * @param {Object} options Options object. Has only cache option.
+ */
 function Parser({cache = true}) {
     this._cache = {};
     this.cache = cache;
 }
 
+i18now.Parser = Parser;
+
 Parser.prototype.vre = /\{\{\s*([^}}]+?)\s*\}\}/;
 Parser.prototype.sre = /\{\{#\s*([^}}]+?)\s*\}\}/;
 Parser.prototype.vsre = /\{\{##\s*([^}}]+?)\s*\}\}/;
 
+/**
+ * Parse string and return list of tokens.
+ * @param  {string} string String to parse.
+ * @return {object[]}        List of tokens.
+ */
 Parser.prototype.parse = function (string){
     if (this.cache && string in this._cache) {
         return this._cache[string];
