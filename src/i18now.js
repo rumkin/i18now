@@ -21,17 +21,9 @@ function i18now({dict, cache = true, parser}) {
         }
 
         var t = function(params) {
-            return parser.parse(dict[name]).map(tok => {
-                if (tok.type === 'string') {
-                    return tok.value;
-                } else if (tok.type === 'var') {
-                    return params[tok.value] || '';
-                } else if (tok.type === 'sub') {
-                    return translator(tok.value)(params);
-                } else if (tok.type === 'varsub') {
-                    return translator(params[tok.value])(params);
-                }
-            }).join('');
+            return parser.compile(dict[name])(params, {
+                templates: dict
+            });
         };
 
         cache && (_cache[name] = t);
@@ -79,10 +71,6 @@ Parser.prototype.vsre = /\{\{##\s*([^}}]+?)\s*\}\}/;
  * @return {object[]}        List of tokens.
  */
 Parser.prototype.parse = function (string){
-    if (this.cache && string in this._cache) {
-        return this._cache[string];
-    }
-
     var result = [];
     var i = 0;
     var vre = this.vre;
@@ -139,4 +127,26 @@ Parser.prototype.parse = function (string){
     }
 
     return result;
+};
+
+Parser.prototype.compile = function (str){
+    if (this.cache && str in this._cache) {
+        return this._cache[str];
+    }
+
+    var tokens = this.parse(str);
+
+    return this._cache[str] = (locals, {templates}) => {
+        return tokens.map(tok => {
+            if (tok.type === 'string') {
+                return tok.value;
+            } else if (tok.type === 'var') {
+                return locals[tok.value] || '';
+            } else if (tok.type === 'sub') {
+                return this.compile(templates[tok.value])(locals, {templates});
+            } else if (tok.type === 'varsub') {
+                return this.compile(templates[locals[tok.value]])(locals, {templates});
+            }
+        }).join('');
+    };
 };

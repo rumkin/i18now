@@ -1,6 +1,6 @@
 {
   "name": "i18now",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Internationalization library",
   "main": "src/i18now.js",
   "scripts": {
