@@ -11,7 +11,7 @@ and variable templates substitutions:
 npm i i18now
 ```
 
-# Usage
+## Usage
 
 Create dictionary
 
@@ -38,10 +38,15 @@ t.gender({gender: 'f'}); // => "female"
 Multiple dictionaries usage see in [repository](https://github.com/rumkin/i18now)
 examples directory.
 
+### Constructor options
 
-## Custom expression compiler
+* dict – `object`. Dictionary object where key is message ID and value is message template.
+* cache – `boolean`. Enable compilation result caching.
+* compiler `Compiler`. Message templates compiler.
 
-i18now allow to use custom message compiler. It should accepts string and return
+## Custom templates compiler
+
+i18now allow to use custom compiler. It should accepts string and return
 function which accepts two arguments: locals and options. Options contains
 `templates` property and actually it's a dict itself.
 

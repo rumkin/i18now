@@ -4,7 +4,7 @@ module.exports = i18now;
  * @type  i18nowOptions
  * @prop {Object} dict Object with messages as properties.
  * @prop {Bool} cache Use parsing cache.
- * @prop {Object} parser Basic parser interface instance.
+ * @prop {Object} compiler Message compiler interface instance.
  */
 
 /**
@@ -12,7 +12,7 @@ module.exports = i18now;
  * @param  {18nowOptions} Translator options.
  * @return {Proxy} Proxy where each property is a translator function.
  */
-function i18now({dict, cache = true, parser}) {
+function i18now({dict, cache = true, compiler}) {
     var _cache = {};
 
     function translator(name) {
@@ -21,7 +21,7 @@ function i18now({dict, cache = true, parser}) {
         }
 
         var t = function(params) {
-            return parser.compile(dict[name])(params, {
+            return compiler.compile(dict[name])(params, {
                 templates: dict
             });
         };
@@ -31,8 +31,8 @@ function i18now({dict, cache = true, parser}) {
         return t;
     }
 
-    if (! parser) {
-        parser = new Parser({cache});
+    if (! compiler) {
+        compiler = new Compiler({cache});
     }
 
     return new Proxy(dict, {
@@ -50,27 +50,27 @@ function i18now({dict, cache = true, parser}) {
 }
 
 /**
- * Basic parser.
+ * Basic compiler.
  *
  * @param {Object} options Options object. Has only cache option.
  */
-function Parser({cache = true}) {
+function Compiler({cache = true}) {
     this._cache = {};
     this.cache = cache;
 }
 
-i18now.Parser = Parser;
+i18now.Compiler = Compiler;
 
-Parser.prototype.vre = /\{\{\s*([^}}]+?)\s*\}\}/;
-Parser.prototype.sre = /\{\{#\s*([^}}]+?)\s*\}\}/;
-Parser.prototype.vsre = /\{\{##\s*([^}}]+?)\s*\}\}/;
+Compiler.prototype.vre = /\{\{\s*([^}}]+?)\s*\}\}/;
+Compiler.prototype.sre = /\{\{#\s*([^}}]+?)\s*\}\}/;
+Compiler.prototype.vsre = /\{\{##\s*([^}}]+?)\s*\}\}/;
 
 /**
  * Parse string and return list of tokens.
  * @param  {string} string String to parse.
  * @return {object[]}        List of tokens.
  */
-Parser.prototype.parse = function (string){
+Compiler.prototype.parse = function (string){
     var result = [];
     var i = 0;
     var vre = this.vre;
@@ -129,7 +129,7 @@ Parser.prototype.parse = function (string){
     return result;
 };
 
-Parser.prototype.compile = function (str){
+Compiler.prototype.compile = function (str){
     if (this.cache && str in this._cache) {
         return this._cache[str];
     }
