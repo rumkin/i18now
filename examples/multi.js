@@ -1,14 +1,16 @@
 const i18now = require('..');
 
+// Create EN dictionary
 var en = {
     hello: 'Hello',
 };
 
+// Create ES dictionary
 var es = {
     hello: 'Hola'
 };
 
-// Extend es dictionary
+// Extend ES dict
 Object.setPrototypeOf(es, en);
 
 var t = {
@@ -20,6 +22,9 @@ var t = {
     }),
 };
 
-en.greeting = 'Hello {{ name }}'
+// Bind rule to EN dict.
+en.greeting = '{{# hello }} {{ name }}';
 
-t.es.greeting({name: 'User'}); // -> Hello User
+// Use greeting message.
+t.en.greeting({name: 'User'}); // -> Hello User
+t.es.greeting({name: 'User'}); // -> Hola User
