@@ -37,3 +37,16 @@ t.gender({gender: 'f'}); // => "female"
 
 Multiple dictionaries usage see in [repository](https://github.com/rumkin/i18now)
 examples directory.
+
+
+## Custom expression compiler
+
+i18now allow to use custom message compiler. It should accepts string and return
+function which accepts two arguments: locals and options. Options contains
+`templates` property and actually it's a dict itself.
+
+Call of abstract compiler will look like so:
+
+```
+compiler.compile(str)(locals, {templates});
+```
